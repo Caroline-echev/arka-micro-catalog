@@ -43,4 +43,11 @@ public class CategoryController {
         return categoryServicePort.getCategoriesPaged(page, size, sortDir, search)
                 .flatMap(categoryDtoMapper::toResponse);
     }
+    @GetMapping("/{id}")
+    @Operation(summary = "Get category by ID")
+    public Mono<CategoryResponse> getCategoryById(@PathVariable Long id) {
+        return categoryServicePort.getCategoryById(id)
+                .map(categoryDtoMapper::toResponse);
+    }
+
 }

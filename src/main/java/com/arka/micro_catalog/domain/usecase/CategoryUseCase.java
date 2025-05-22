@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import static com.arka.micro_catalog.domain.util.constants.CategoryConstants.CATEGORY_ALREADY_EXISTS;
+import static com.arka.micro_catalog.domain.util.constants.CategoryConstants.CATEGORY_NOT_FOUND;
 
 
 @Service
@@ -32,4 +33,9 @@ public class CategoryUseCase implements ICategoryServicePort {
         return categoryPersistencePort.findAllPaged(page, size, sortDir, search);
     }
 
+    @Override
+    public Mono<CategoryModel> getCategoryById(Long id) {
+        return categoryPersistencePort.findById(id)
+                .switchIfEmpty(Mono.error(new DuplicateResourceException(CATEGORY_NOT_FOUND)));
+    }
 }

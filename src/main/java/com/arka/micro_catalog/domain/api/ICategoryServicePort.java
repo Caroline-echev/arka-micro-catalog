@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 public interface ICategoryServicePort {
     Mono<Void> createCategory(CategoryModel categoryModel);
     Mono<PaginationModel<CategoryModel>> getCategoriesPaged(int page, int size, String sortDir, String search);
-
+    Mono<CategoryModel> getCategoryById(Long id);
 }

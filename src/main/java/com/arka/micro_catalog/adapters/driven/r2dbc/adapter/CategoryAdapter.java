@@ -12,6 +12,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.arka.micro_catalog.adapters.driven.r2dbc.util.ConstantsR2DBC.SORT_ASC;
+import static com.arka.micro_catalog.adapters.driven.r2dbc.util.ConstantsR2DBC.SORT_DESC;
+
 @Component
 @RequiredArgsConstructor
 public class CategoryAdapter implements ICategoryPersistencePort {
@@ -35,7 +38,7 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     @Override
     public Mono<PaginationModel<CategoryModel>> findAllPaged(int page, int size, String sortDir, String search) {
         long offset = (long) page * size;
-        String normalizedSortDir = "desc".equalsIgnoreCase(sortDir) ? "desc" : "asc";
+        String normalizedSortDir = SORT_DESC.equalsIgnoreCase(sortDir) ? SORT_DESC : SORT_ASC;
 
         Flux<CategoryModel> itemsFlux = categoryRepository
                 .findAllPagedWithSearch(search, normalizedSortDir, size, offset)
@@ -57,6 +60,12 @@ public class CategoryAdapter implements ICategoryPersistencePort {
                             .totalPages(totalPages)
                             .build();
                 });
+    }
+
+    @Override
+    public Mono<CategoryModel> findById(Long id) {
+        return categoryRepository.findById(id)
+                .map(categoryEntityMapper::toModel);
     }
 
 }
