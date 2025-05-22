@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.arka.micro_catalog.configuration.exception.handler.util.ExceptionHandlerConstants.*;
 import static com.arka.micro_catalog.configuration.exception.handler.util.ExceptionHandlerConstants.VALIDATION_ERROR_CODE;
+import static com.arka.micro_catalog.configuration.exception.handler.util.ExceptionHandlerConstants.*;
 import static com.arka.micro_catalog.configuration.util.ConstantsConfiguration.*;
 
 
