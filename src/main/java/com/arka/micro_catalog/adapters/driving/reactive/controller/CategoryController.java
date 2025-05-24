@@ -49,5 +49,10 @@ public class CategoryController {
         return categoryServicePort.getCategoryById(id)
                 .map(categoryDtoMapper::toResponse);
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing category")
+    public Mono<Void> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
+        return categoryServicePort.updateCategory(id, categoryDtoMapper.toModel(request));
+    }
 
 }

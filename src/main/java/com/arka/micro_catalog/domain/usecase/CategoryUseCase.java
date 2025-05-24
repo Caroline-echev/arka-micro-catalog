@@ -3,6 +3,7 @@ package com.arka.micro_catalog.domain.usecase;
 
 import com.arka.micro_catalog.domain.api.ICategoryServicePort;
 import com.arka.micro_catalog.domain.exception.DuplicateResourceException;
+import com.arka.micro_catalog.domain.exception.NotFoundException;
 import com.arka.micro_catalog.domain.model.CategoryModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.spi.ICategoryPersistencePort;
@@ -36,6 +37,14 @@ public class CategoryUseCase implements ICategoryServicePort {
     @Override
     public Mono<CategoryModel> getCategoryById(Long id) {
         return categoryPersistencePort.findById(id)
-                .switchIfEmpty(Mono.error(new DuplicateResourceException(CATEGORY_NOT_FOUND)));
+                .switchIfEmpty(Mono.error(new NotFoundException(CATEGORY_NOT_FOUND)));
+    }
+
+    @Override
+    public Mono<Void> updateCategory(Long id, CategoryModel categoryModel) {
+        return categoryPersistencePort.findById(id)
+                .flatMap(existingCategory -> categoryPersistencePort.save(categoryModel))
+                .switchIfEmpty(Mono.error(new NotFoundException(CATEGORY_NOT_FOUND)))
+                .then();
     }
 }

@@ -1,6 +1,9 @@
 package com.arka.micro_catalog.configuration.util;
 
 public class ConstantsConfiguration {
+    private ConstantsConfiguration() {
+        throw new IllegalStateException("Utility class");
+    }
     public static final String VALIDATION_ERROR_CODE = "ERR_VALIDATION";
     public static final String INTERNAL_ERROR_PREFIX = "An unexpected error occurred: ";
     public static final String ERROR_PROCESSING_RESPONSE = "Error processing response";

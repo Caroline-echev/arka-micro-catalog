@@ -1,6 +1,5 @@
 package com.arka.micro_catalog.adapters.driven.r2dbc.util;
 
-import org.springframework.security.core.parameters.P;
 
 public class ConstantsR2DBC {
     private ConstantsR2DBC() {
