@@ -11,4 +11,6 @@ public interface IBrandServicePort {
     Mono<PaginationModel<BrandModel>> getBrandsPaged(int page, int size, String sortDir, String search);
 
     Mono<BrandModel> getBrandById(Long id);
+
+    Mono<Void> updateBrand(Long id, BrandModel request);
 }

@@ -48,4 +48,16 @@ public class BrandUseCase implements IBrandServicePort {
 
     }
 
+    @Override
+    public Mono<Void> updateBrand(Long id, BrandModel request) {
+        return brandPersistencePort.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException(BRAND_NOT_FOUND)))
+                .flatMap(existingBrand -> {
+                    request.setId(id);
+                    return brandPersistencePort.save(request);
+                })
+                .then();
+    }
+
+
 }

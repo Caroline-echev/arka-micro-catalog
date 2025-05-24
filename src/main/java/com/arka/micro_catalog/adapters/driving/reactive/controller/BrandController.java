@@ -53,4 +53,11 @@ public class BrandController {
         return brandServicePort.getBrandById(id)
                 .map(brandDtoMapper::toResponse);
     }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing brand")
+    public Mono<Void> updateBrand(@PathVariable Long id, @Valid @RequestBody BrandRequest request) {
+        return brandServicePort.updateBrand(id, brandDtoMapper.toModel(request));
+    }
+
 }

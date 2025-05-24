@@ -43,8 +43,12 @@ public class CategoryUseCase implements ICategoryServicePort {
     @Override
     public Mono<Void> updateCategory(Long id, CategoryModel categoryModel) {
         return categoryPersistencePort.findById(id)
-                .flatMap(existingCategory -> categoryPersistencePort.save(categoryModel))
                 .switchIfEmpty(Mono.error(new NotFoundException(CATEGORY_NOT_FOUND)))
+                .flatMap(existingCategory -> {
+                    categoryModel.setId(id);
+                    return categoryPersistencePort.save(categoryModel);
+                })
                 .then();
     }
+
 }
