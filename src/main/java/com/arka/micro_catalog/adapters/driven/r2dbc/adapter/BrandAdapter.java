@@ -38,4 +38,31 @@ public class BrandAdapter implements IBrandPersistencePort {
                 .map(brandEntityMapper::toModel);
 
     }
+
+    @Override
+    public Mono<PaginationModel<BrandModel>> findAllPaged(int page, int size, String sortDir, String search) {
+        long offset = (long) page * size;
+        String normalizedSortDir = SORT_DESC.equalsIgnoreCase(sortDir) ? SORT_DESC : SORT_ASC;
+
+        Flux<BrandModel> itemsFlux = brandRepository
+                .findAllPagedWithSearch(search, normalizedSortDir, size, offset)
+                .map(brandEntityMapper::toModel);
+
+        Mono<List<BrandModel>> itemsMono = itemsFlux.collectList();
+        Mono<Long> countMono = brandRepository.countWithSearch(search);
+
+        return Mono.zip(itemsMono, countMono)
+                .map(tuple -> {
+                    List<BrandModel> items = tuple.getT1();
+                    long totalElements = tuple.getT2();
+                    int totalPages = (int) Math.ceil((double) totalElements / size);
+
+                    return PaginationModel.<BrandModel>builder()
+                            .items(items)
+                            .totalElements(totalElements)
+                            .currentPage(page)
+                            .totalPages(totalPages)
+                            .build();
+                });
+    }
 }

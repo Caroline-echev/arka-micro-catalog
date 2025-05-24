@@ -3,6 +3,7 @@ package com.arka.micro_catalog.adapters.driving.reactive.controller;
 
 import com.arka.micro_catalog.adapters.driving.reactive.dto.request.BrandRequest;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.request.CategoryRequest;
+import com.arka.micro_catalog.adapters.driving.reactive.dto.response.BrandResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.CategoryResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.PaginationResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.mapper.IBrandDtoMapper;
@@ -34,5 +35,15 @@ public class BrandController {
     public Mono<Void> createBrand(@Valid @RequestBody BrandRequest request) {
         return brandServicePort.createBrand(brandDtoMapper.toModel(request));
     }
+    @GetMapping
+    @Operation(summary = "Get paginated and filtered brands")
+    public Mono<PaginationResponse<BrandResponse>> getBrands(
+            @RequestParam(defaultValue = PAGE_DEFAULT) int page,
+            @RequestParam(defaultValue = SIZE_DEFAULT) int size,
+            @RequestParam(defaultValue = SORT_DEFAULT) String sortDir,
+            @RequestParam(required = false) String search) {
 
+        return brandServicePort.getBrandsPaged(page, size, sortDir, search)
+                .flatMap(brandDtoMapper::toResponse);
+    }
 }

@@ -34,4 +34,9 @@ public class BrandUseCase implements IBrandServicePort {
                 .then();
     }
 
+    @Override
+    public Mono<PaginationModel<BrandModel>> getBrandsPaged(int page, int size, String sortDir, String search) {
+        return brandPersistencePort.findAllPaged(page, size, sortDir, search);
+    }
+
 }
