@@ -19,7 +19,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api-docs/**",
                                 "/webjars/**",
-                                "/api/categories/**"
+                                "/api/categories/**",
+                                "/api/brands/**"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )
