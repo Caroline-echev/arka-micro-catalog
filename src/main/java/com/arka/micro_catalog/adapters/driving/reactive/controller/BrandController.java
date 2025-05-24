@@ -46,4 +46,11 @@ public class BrandController {
         return brandServicePort.getBrandsPaged(page, size, sortDir, search)
                 .flatMap(brandDtoMapper::toResponse);
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get brand by ID")
+    public Mono<BrandResponse> getBrandById(@PathVariable Long id) {
+        return brandServicePort.getBrandById(id)
+                .map(brandDtoMapper::toResponse);
+    }
 }

@@ -9,4 +9,6 @@ public interface IBrandServicePort {
     Mono<Void> createBrand(BrandModel request);
 
     Mono<PaginationModel<BrandModel>> getBrandsPaged(int page, int size, String sortDir, String search);
+
+    Mono<BrandModel> getBrandById(Long id);
 }

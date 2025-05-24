@@ -65,4 +65,10 @@ public class BrandAdapter implements IBrandPersistencePort {
                             .build();
                 });
     }
+
+    @Override
+    public Mono<BrandModel> findById(Long id) {
+        return brandRepository.findById(id)
+                .map(brandEntityMapper::toModel);
+    }
 }

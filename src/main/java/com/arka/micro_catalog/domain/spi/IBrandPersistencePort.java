@@ -10,5 +10,5 @@ public interface IBrandPersistencePort {
     Mono<BrandModel> findByName(String name);
     Mono<PaginationModel<BrandModel>> findAllPaged(int page, int size, String sortDir, String search);
 
-
+    Mono<BrandModel> findById(Long id);
 }
