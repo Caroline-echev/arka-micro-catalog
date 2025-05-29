@@ -3,6 +3,7 @@ package com.arka.micro_catalog.domain.usecase;
 
 import com.arka.micro_catalog.domain.api.IProductServicePort;
 import com.arka.micro_catalog.domain.exception.DuplicateResourceException;
+import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.model.ProductModel;
 import com.arka.micro_catalog.domain.spi.IBrandPersistencePort;
 import com.arka.micro_catalog.domain.spi.ICategoryPersistencePort;
@@ -44,6 +45,11 @@ public class ProductUseCase implements IProductServicePort {
                                                     )
                                             );
                                 })));
+    }
+
+    @Override
+    public Mono<PaginationModel<ProductModel>> getProducts(int page, int size, String sortDir, String search) {
+        return productPersistencePort.findAllPaged(page, size, sortDir, search);
     }
 
     private Mono<Void> checkProductExists(String productName) {

@@ -11,7 +11,6 @@ public interface IProductEntityMapper {
     @Mapping(target = "brandId", source = "brand.id")
     ProductEntity toEntity(ProductModel model);
 
-    @Mapping(target = "brand", ignore = true)
-    @Mapping(target = "categories", ignore = true)
+
     ProductModel toModel(ProductEntity entity);
 }
