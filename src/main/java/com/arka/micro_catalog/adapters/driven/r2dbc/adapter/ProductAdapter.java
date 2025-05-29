@@ -58,47 +58,24 @@ public class ProductAdapter implements IProductPersistencePort {
     }
 
     @Override
-    public Mono<PaginationModel<ProductModel>> findAllPaged(int page, int size, String sortDir, String search) {
+    public Flux<ProductModel> findAllPagedRaw(int page, int size, String sortDir, String search) {
         long offset = (long) page * size;
         String normalizedSortDir = SORT_DESC.equalsIgnoreCase(sortDir) ? SORT_DESC : SORT_ASC;
 
-        Flux<ProductEntity> entityFlux = productRepository.findAllPagedWithSearch(search, normalizedSortDir, size, offset);
-
-        Flux<ProductModel> modelFlux = entityFlux.flatMap(entity -> {
-            ProductModel model = productEntityMapper.toModel(entity);
-
-            Mono<BrandModel> brandMono = brandPersistencePort.findById(entity.getBrandId()); // <-- cargar marca
-            Flux<Long> categoryIdsFlux = productCategoryPersistencePort.findCategoryIdsByProductId(entity.getId()); // <-- cargar IDs
-
-            Mono<List<CategoryModel>> categoriesMono = categoryIdsFlux
-                    .flatMap(categoryPersistencePort::findById)
-                    .collectList();
-
-            return Mono.zip(Mono.just(model), brandMono, categoriesMono)
-                    .map(tuple -> {
-                        ProductModel enriched = tuple.getT1();
-                        enriched.setBrand(tuple.getT2());
-                        enriched.setCategories(tuple.getT3());
-                        return enriched;
-                    });
-        });
-
-        Mono<List<ProductModel>> itemsMono = modelFlux.collectList();
-        Mono<Long> countMono = productRepository.countWithSearch(search);
-
-        return Mono.zip(itemsMono, countMono)
-                .map(tuple -> {
-                    List<ProductModel> items = tuple.getT1();
-                    long totalElements = tuple.getT2();
-                    int totalPages = (int) Math.ceil((double) totalElements / size);
-
-                    return PaginationModel.<ProductModel>builder()
-                            .items(items)
-                            .totalElements(totalElements)
-                            .currentPage(page)
-                            .totalPages(totalPages)
-                            .build();
+        return productRepository.findAllPagedWithSearch(search, normalizedSortDir, size, offset)
+                .map(entity -> {
+                    ProductModel model = productEntityMapper.toModel(entity);
+                   if (entity.getBrandId() != null) {
+                        BrandModel tempBrand = new BrandModel();
+                        tempBrand.setId(entity.getBrandId());
+                        model.setBrand(tempBrand);
+                    }
+                    return model;
                 });
+    }
+    @Override
+    public Mono<Long> countWithSearch(String search) {
+        return productRepository.countWithSearch(search);
     }
 
 
