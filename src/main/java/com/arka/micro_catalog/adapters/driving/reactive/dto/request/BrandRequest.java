@@ -5,8 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import static com.arka.micro_catalog.adapters.util.BrandConstants.*;
-import static com.arka.micro_catalog.adapters.util.BrandConstants.DESCRIPTION_NOT_BLANK;
+import static com.arka.micro_catalog.adapters.util.BrandConstantsDriving.*;
 @Data
 @AllArgsConstructor
 public class BrandRequest {

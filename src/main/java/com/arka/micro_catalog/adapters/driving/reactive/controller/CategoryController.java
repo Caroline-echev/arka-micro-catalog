@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import static com.arka.micro_catalog.adapters.util.CategoryConstants.*;
+import static com.arka.micro_catalog.adapters.util.CategoryConstantsDriving.*;
 
 @RestController
 @RequestMapping("/api/categories")

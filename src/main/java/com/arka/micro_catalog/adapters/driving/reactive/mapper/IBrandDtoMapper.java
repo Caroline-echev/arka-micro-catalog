@@ -1,12 +1,9 @@
 package com.arka.micro_catalog.adapters.driving.reactive.mapper;
 
 import com.arka.micro_catalog.adapters.driving.reactive.dto.request.BrandRequest;
-import com.arka.micro_catalog.adapters.driving.reactive.dto.request.CategoryRequest;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.BrandResponse;
-import com.arka.micro_catalog.adapters.driving.reactive.dto.response.CategoryResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.PaginationResponse;
 import com.arka.micro_catalog.domain.model.BrandModel;
-import com.arka.micro_catalog.domain.model.CategoryModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import org.mapstruct.Mapper;
 import reactor.core.publisher.Mono;

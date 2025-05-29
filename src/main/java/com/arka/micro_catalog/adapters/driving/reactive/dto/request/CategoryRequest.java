@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import static com.arka.micro_catalog.adapters.util.CategoryConstants.*;
+import static com.arka.micro_catalog.adapters.util.CategoryConstantsDriving.*;
 
 @Data
 @AllArgsConstructor

@@ -1,0 +1,11 @@
+package com.arka.micro_catalog.domain.api;
+
+import com.arka.micro_catalog.domain.model.ProductModel;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+public interface IProductServicePort {
+
+    Mono<Void> createProduct(ProductModel productModel, Long brandId, List<Long> categoryIds);
+}

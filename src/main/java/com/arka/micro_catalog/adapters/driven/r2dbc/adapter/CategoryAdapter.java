@@ -68,4 +68,10 @@ public class CategoryAdapter implements ICategoryPersistencePort {
                 .map(categoryEntityMapper::toModel);
     }
 
+    @Override
+    public Flux<CategoryModel> findAllByIds(List<Long> ids) {
+        return categoryRepository.findAllByIdIn(ids)
+                .map(categoryEntityMapper::toModel);
+    }
+
 }

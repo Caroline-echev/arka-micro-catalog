@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Repository
 public interface ICategoryRepository extends ReactiveCrudRepository<CategoryEntity, Long> {
     Mono<CategoryEntity> findByName(String name);
@@ -25,4 +27,6 @@ public interface ICategoryRepository extends ReactiveCrudRepository<CategoryEnti
 
     @Query("SELECT COUNT(*) FROM tb_category WHERE (:search IS NULL OR name ILIKE CONCAT('%', :search, '%') OR description ILIKE CONCAT('%', :search, '%'))")
     Mono<Long> countWithSearch(@Param("search") String search);
+
+    Flux<CategoryEntity> findAllByIdIn(List<Long> ids);
 }
