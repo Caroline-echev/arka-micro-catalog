@@ -118,9 +118,55 @@ public class ProductUseCase implements IProductServicePort {
                             });
                 });
     }
+    @Override
+    public Mono<ProductModel> updateProduct(Long productId, ProductModel productModel, Long brandId, List<Long> categoryIds) {
+        return productPersistencePort.findById(productId)
+                .switchIfEmpty(Mono.error(new NotFoundException("Product not found with id: " + productId)))
+                .flatMap(existingProduct ->
+                        checkProductNameUniquenessForUpdate(productModel.getName(), productId)
+                                .then(ProductValidationUtil.validateBrandExists(brandId, brandPersistencePort)
+                                        .flatMap(brand -> ProductValidationUtil.validateCategoriesExist(categoryIds, categoryPersistencePort)
+                                                .flatMap(categories -> {
+                                                    // Update product fields
+                                                    existingProduct.setName(productModel.getName());
+                                                    existingProduct.setDescription(productModel.getDescription());
+                                                    existingProduct.setPrice(productModel.getPrice());
+                                                    existingProduct.setStatus(productModel.getStatus());
+                                                    existingProduct.setPhoto(productModel.getPhoto());
+                                                    existingProduct.setBrand(brand);
+                                                    existingProduct.setCategories(categories);
+
+                                                    // Save updated product and update categories
+                                                    return productPersistencePort.save(existingProduct)
+                                                            .flatMap(savedProduct ->
+                                                                    productCategoryPersistencePort.deleteByProductId(productId)
+                                                                            .then(productCategoryPersistencePort.saveProductCategories(
+                                                                                    productId,
+                                                                                    categoryIds
+                                                                            ))
+                                                                            .then(Mono.just(savedProduct))
+                                                            );
+                                                })
+                                        )
+                                )
+                );
+    }
+
     private Mono<Void> checkProductExists(String productName) {
         return productPersistencePort.findByName(productName)
                 .flatMap(existing -> Mono.error(new DuplicateResourceException(ERROR_PRODUCT_ALREADY_EXISTS)))
+                .then();
+    }
+
+
+    private Mono<Void> checkProductNameUniquenessForUpdate(String productName, Long productId) {
+        return productPersistencePort.findByName(productName)
+                .flatMap(existing -> {
+                    if (!Objects.equals(existing.getId(), productId)) {
+                        return Mono.error(new DuplicateResourceException(ERROR_PRODUCT_ALREADY_EXISTS));
+                    }
+                    return Mono.empty();
+                })
                 .then();
     }
 }

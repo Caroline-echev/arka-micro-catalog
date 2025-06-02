@@ -49,5 +49,13 @@ public class ProductController {
         return productServicePort.getProductById(id)
                 .map(productDtoMapper::toResponse);
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing product")
+    public Mono<ProductResponse> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductRequest request) {
+        return productServicePort.updateProduct(id, productDtoMapper.toModel(request), request.getBrandId(), request.getCategoryIds())
+                .map(productDtoMapper::toResponse);
+    }
 
 }

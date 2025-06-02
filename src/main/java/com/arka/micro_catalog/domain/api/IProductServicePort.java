@@ -12,4 +12,6 @@ public interface IProductServicePort {
 
     Mono<PaginationModel<ProductModel>> getProducts( int page,  int size,   String sortDir,    String searc);
     Mono<ProductModel> getProductById(Long id);
+    Mono<ProductModel> updateProduct(Long productId, ProductModel productModel, Long brandId, List<Long> categoryIds);
+
 }
