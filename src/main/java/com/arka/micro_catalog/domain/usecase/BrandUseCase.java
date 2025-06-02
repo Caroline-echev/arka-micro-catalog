@@ -2,18 +2,15 @@ package com.arka.micro_catalog.domain.usecase;
 
 
 import com.arka.micro_catalog.domain.api.IBrandServicePort;
-import com.arka.micro_catalog.domain.exception.DuplicateResourceException;
-import com.arka.micro_catalog.domain.exception.NotFoundException;
 import com.arka.micro_catalog.domain.model.BrandModel;
+import com.arka.micro_catalog.domain.model.CategoryModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.spi.IBrandPersistencePort;
+import com.arka.micro_catalog.domain.util.validation.BrandValidator;
+import com.arka.micro_catalog.domain.util.validation.CategoryValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-
-import static com.arka.micro_catalog.domain.util.constants.BrandConstants.BRAND_ALREADY_EXISTS;
-import static com.arka.micro_catalog.domain.util.constants.BrandConstants.BRAND_NOT_FOUND;
-
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +18,10 @@ public class BrandUseCase implements IBrandServicePort {
 
     private final IBrandPersistencePort brandPersistencePort;
 
-
-
     @Override
     public Mono<Void> createBrand(BrandModel brandModel) {
-        return brandPersistencePort.findByName(brandModel.getName())
-                .flatMap(existingCategory -> Mono.error(new DuplicateResourceException(BRAND_ALREADY_EXISTS)))
-                .switchIfEmpty(brandPersistencePort.save(brandModel))
+        return BrandValidator.validateBrandDoesNotExistByName(brandModel.getName(), brandPersistencePort)
+                .then(brandPersistencePort.save(brandModel))
                 .then();
     }
 
@@ -38,19 +32,19 @@ public class BrandUseCase implements IBrandServicePort {
 
     @Override
     public Mono<BrandModel> getBrandById(Long id) {
-        return brandPersistencePort.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException(BRAND_NOT_FOUND)));
-
+        return BrandValidator.validateBrandExistsById(id, brandPersistencePort);
     }
 
     @Override
-    public Mono<Void> updateBrand(Long id, BrandModel request) {
-        return brandPersistencePort.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException(BRAND_NOT_FOUND)))
-                .flatMap(existingBrand -> {
-                    request.setId(id);
-                    return brandPersistencePort.save(request);
-                })
+    public Mono<Void> updateBrand(Long id, BrandModel brandModel) {
+        return BrandValidator.validateBrandExistsById(id, brandPersistencePort)
+                .flatMap(existing -> BrandValidator
+                        .validateBrandDoesNotExistByName(brandModel.getName(), brandPersistencePort)
+                        .then(Mono.defer(() -> {
+                            brandModel.setId(id);
+                            return brandPersistencePort.save(brandModel);
+                        }))
+                )
                 .then();
     }
 

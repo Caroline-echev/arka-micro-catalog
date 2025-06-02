@@ -1,6 +1,5 @@
 package com.arka.micro_catalog.domain.spi;
 
-import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.model.ProductModel;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

@@ -4,8 +4,6 @@ package com.arka.micro_catalog.adapters.driven.r2dbc.adapter;
 import com.arka.micro_catalog.adapters.driven.r2dbc.mapper.IProductEntityMapper;
 import com.arka.micro_catalog.adapters.driven.r2dbc.repository.IProductRepository;
 import com.arka.micro_catalog.domain.model.BrandModel;
-import com.arka.micro_catalog.domain.model.CategoryModel;
-import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.model.ProductModel;
 import com.arka.micro_catalog.domain.spi.IBrandPersistencePort;
 import com.arka.micro_catalog.domain.spi.ICategoryPersistencePort;
@@ -16,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 import static com.arka.micro_catalog.adapters.driven.r2dbc.util.ConstantsR2DBC.SORT_ASC;
 import static com.arka.micro_catalog.adapters.driven.r2dbc.util.ConstantsR2DBC.SORT_DESC;

@@ -8,7 +8,6 @@ import com.arka.micro_catalog.domain.spi.IBrandPersistencePort;
 import com.arka.micro_catalog.domain.spi.ICategoryPersistencePort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,7 +34,7 @@ class ProductValidationUtilTest {
         BrandModel brand = new BrandModel(1L, "BrandName", "Description");
         Mockito.when(brandPersistencePort.findById(1L)).thenReturn(Mono.just(brand));
 
-        StepVerifier.create(ProductValidationUtil.validateBrandExists(1L, brandPersistencePort))
+        StepVerifier.create(ProductValidator.validateBrandExists(1L, brandPersistencePort))
                 .expectNext(brand)
                 .verifyComplete();
 
@@ -46,7 +45,7 @@ class ProductValidationUtilTest {
     void validateBrandExists_shouldErrorNotFound_whenBrandNotFound() {
         Mockito.when(brandPersistencePort.findById(1L)).thenReturn(Mono.empty());
 
-        StepVerifier.create(ProductValidationUtil.validateBrandExists(1L, brandPersistencePort))
+        StepVerifier.create(ProductValidator.validateBrandExists(1L, brandPersistencePort))
                 .expectErrorMatches(err -> err instanceof NotFoundException &&
                         err.getMessage().equals(ERROR_BRAND_NOT_FOUND))
                 .verify();
@@ -64,7 +63,7 @@ class ProductValidationUtilTest {
 
         Mockito.when(categoryPersistencePort.findAllByIds(ids)).thenReturn(Flux.fromIterable(categories));
 
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(ids, categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(ids, categoryPersistencePort))
                 .expectNext(categories)
                 .verifyComplete();
 
@@ -73,7 +72,7 @@ class ProductValidationUtilTest {
 
     @Test
     void validateCategoriesExist_shouldErrorBadRequest_whenCategoryListNull() {
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(null, categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(null, categoryPersistencePort))
                 .expectErrorMatches(err -> err instanceof BadRequestException &&
                         err.getMessage().equals(ERROR_CATEGORY_COUNT_INVALID))
                 .verify();
@@ -83,7 +82,7 @@ class ProductValidationUtilTest {
 
     @Test
     void validateCategoriesExist_shouldErrorBadRequest_whenCategoryListEmpty() {
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(List.of(), categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(List.of(), categoryPersistencePort))
                 .expectErrorMatches(err -> err instanceof BadRequestException &&
                         err.getMessage().equals(ERROR_CATEGORY_COUNT_INVALID))
                 .verify();
@@ -95,7 +94,7 @@ class ProductValidationUtilTest {
     void validateCategoriesExist_shouldErrorBadRequest_whenCategoryListTooLarge() {
         List<Long> tooMany = List.of(1L, 2L, 3L, 4L);
 
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(tooMany, categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(tooMany, categoryPersistencePort))
                 .expectErrorMatches(err -> err instanceof BadRequestException &&
                         err.getMessage().equals(ERROR_CATEGORY_COUNT_INVALID))
                 .verify();
@@ -107,7 +106,7 @@ class ProductValidationUtilTest {
     void validateCategoriesExist_shouldErrorBadRequest_whenCategoryListHasDuplicates() {
         List<Long> duplicates = List.of(1L, 1L);
 
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(duplicates, categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(duplicates, categoryPersistencePort))
                 .expectErrorMatches(err -> err instanceof BadRequestException &&
                         err.getMessage().equals(ERROR_CATEGORY_DUPLICATE))
                 .verify();
@@ -122,7 +121,7 @@ class ProductValidationUtilTest {
         List<CategoryModel> found = List.of(new CategoryModel(1L, "Cat1", "Desc1"));
         Mockito.when(categoryPersistencePort.findAllByIds(ids)).thenReturn(Flux.fromIterable(found));
 
-        StepVerifier.create(ProductValidationUtil.validateCategoriesExist(ids, categoryPersistencePort))
+        StepVerifier.create(ProductValidator.validateCategoriesExist(ids, categoryPersistencePort))
                 .expectErrorMatches(err -> err instanceof NotFoundException &&
                         err.getMessage().equals(ERROR_CATEGORIES_NOT_FOUND))
                 .verify();

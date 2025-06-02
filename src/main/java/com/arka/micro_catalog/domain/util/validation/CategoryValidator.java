@@ -1,22 +1,29 @@
 package com.arka.micro_catalog.domain.util.validation;
 
 import com.arka.micro_catalog.domain.exception.BadRequestException;
+import com.arka.micro_catalog.domain.exception.DuplicateResourceException;
 import com.arka.micro_catalog.domain.exception.NotFoundException;
-import com.arka.micro_catalog.domain.model.BrandModel;
 import com.arka.micro_catalog.domain.model.CategoryModel;
-import com.arka.micro_catalog.domain.spi.IBrandPersistencePort;
 import com.arka.micro_catalog.domain.spi.ICategoryPersistencePort;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.arka.micro_catalog.domain.util.constants.CategoryConstants.CATEGORY_ALREADY_EXISTS;
+import static com.arka.micro_catalog.domain.util.constants.CategoryConstants.CATEGORY_NOT_FOUND;
 import static com.arka.micro_catalog.domain.util.constants.ProductConstants.*;
+import static com.arka.micro_catalog.domain.util.constants.ProductConstants.ERROR_CATEGORIES_NOT_FOUND;
 
-public class ProductValidationUtil {
+public class CategoryValidator {
+    public static Mono<Void> validateCategoryDoesNotExistByName(String name, ICategoryPersistencePort categoryPersistencePort) {
+        return categoryPersistencePort.findByName(name)
+                .flatMap(existing -> Mono.error(new DuplicateResourceException(CATEGORY_ALREADY_EXISTS)))
+                .then();
+    }
 
-    public static Mono<BrandModel> validateBrandExists(Long brandId, IBrandPersistencePort brandPersistencePort) {
-        return brandPersistencePort.findById(brandId)
-                .switchIfEmpty(Mono.error(new NotFoundException(ERROR_BRAND_NOT_FOUND)));
+    public static Mono<CategoryModel> validateCategoryExistsById(Long categoryId, ICategoryPersistencePort categoryPersistencePort) {
+        return categoryPersistencePort.findById(categoryId)
+                .switchIfEmpty(Mono.error(new NotFoundException(CATEGORY_NOT_FOUND)));
     }
 
     public static Mono<List<CategoryModel>> validateCategoriesExist(List<Long> categoryIds, ICategoryPersistencePort categoryPersistencePort) {

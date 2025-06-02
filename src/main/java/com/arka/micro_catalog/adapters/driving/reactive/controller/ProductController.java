@@ -1,7 +1,6 @@
 package com.arka.micro_catalog.adapters.driving.reactive.controller;
 
 import com.arka.micro_catalog.adapters.driving.reactive.dto.request.ProductRequest;
-import com.arka.micro_catalog.adapters.driving.reactive.dto.response.CategoryResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.PaginationResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.dto.response.ProductResponse;
 import com.arka.micro_catalog.adapters.driving.reactive.mapper.IProductDtoMapper;
@@ -14,7 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import static com.arka.micro_catalog.adapters.util.CategoryConstantsDriving.*;
+import static com.arka.micro_catalog.adapters.util.CategoryConstantsDriving.PAGE_DEFAULT;
+import static com.arka.micro_catalog.adapters.util.CategoryConstantsDriving.SIZE_DEFAULT;
 
 @RestController
 @RequestMapping("/api/products")
