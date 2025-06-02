@@ -11,7 +11,6 @@ public interface IProductPersistencePort {
 
     Mono<ProductModel> findById(Long id);
 
-    //Mono<PaginationModel<ProductModel>> findAllPaged(int page, int size, String sortDir, String search);
 
     Flux<ProductModel> findAllPagedRaw(int page, int size, String sortDir, String search);
     Mono<Long> countWithSearch(String search);

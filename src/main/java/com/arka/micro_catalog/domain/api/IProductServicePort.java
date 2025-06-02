@@ -11,4 +11,5 @@ public interface IProductServicePort {
     Mono<Void> createProduct(ProductModel productModel, Long brandId, List<Long> categoryIds);
 
     Mono<PaginationModel<ProductModel>> getProducts( int page,  int size,   String sortDir,    String searc);
+    Mono<ProductModel> getProductById(Long id);
 }

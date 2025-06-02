@@ -42,4 +42,12 @@ public class ProductController {
                 .flatMap(productDtoMapper::toResponse);
     }
 
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get product by ID")
+    public Mono<ProductResponse> getProductById(@PathVariable Long id) {
+        return productServicePort.getProductById(id)
+                .map(productDtoMapper::toResponse);
+    }
+
 }

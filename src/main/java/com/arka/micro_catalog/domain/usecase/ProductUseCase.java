@@ -3,6 +3,7 @@ package com.arka.micro_catalog.domain.usecase;
 
 import com.arka.micro_catalog.domain.api.IProductServicePort;
 import com.arka.micro_catalog.domain.exception.DuplicateResourceException;
+import com.arka.micro_catalog.domain.exception.NotFoundException;
 import com.arka.micro_catalog.domain.model.BrandModel;
 import com.arka.micro_catalog.domain.model.CategoryModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.arka.micro_catalog.domain.util.constants.ProductConstants.ERROR_PRODUCT_ALREADY_EXISTS;
 
@@ -92,8 +94,30 @@ public class ProductUseCase implements IProductServicePort {
                             .build();
                 });
     }
-
-
+    @Override
+    public Mono<ProductModel> getProductById(Long id) {
+        return productPersistencePort.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("Product not found with id: " + id)))
+                .flatMap(product -> {
+                    Mono<BrandModel> brandMono;
+                    if (product.getBrand() != null && product.getBrand().getId() != null) {
+                        brandMono = brandPersistencePort.findById(product.getBrand().getId());
+                    } else {
+                        brandMono = Mono.empty();
+                    }
+                    Flux<Long> categoryIdsFlux = productCategoryPersistencePort.findCategoryIdsByProductId(product.getId());
+                    Mono<List<CategoryModel>> categoriesMono = categoryIdsFlux
+                            .flatMap(categoryPersistencePort::findById)
+                            .collectList();
+                    return Mono.zip(Mono.just(product), brandMono, categoriesMono)
+                            .map(tuple -> {
+                                ProductModel enriched = tuple.getT1();
+                                enriched.setBrand(tuple.getT2());
+                                enriched.setCategories(tuple.getT3());
+                                return enriched;
+                            });
+                });
+    }
     private Mono<Void> checkProductExists(String productName) {
         return productPersistencePort.findByName(productName)
                 .flatMap(existing -> Mono.error(new DuplicateResourceException(ERROR_PRODUCT_ALREADY_EXISTS)))

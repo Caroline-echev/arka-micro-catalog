@@ -54,7 +54,15 @@ public class ProductAdapter implements IProductPersistencePort {
     @Override
     public Mono<ProductModel> findById(Long id) {
         return productRepository.findById(id)
-                .map(productEntityMapper::toModel);
+                .map(entity -> {
+                    ProductModel model = productEntityMapper.toModel(entity);
+                    if (entity.getBrandId() != null) {
+                        BrandModel tempBrand = new BrandModel();
+                        tempBrand.setId(entity.getBrandId());
+                        model.setBrand(tempBrand);
+                    }
+                    return model;
+                });
     }
 
     @Override
