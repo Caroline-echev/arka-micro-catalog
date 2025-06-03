@@ -11,11 +11,10 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 class IBrandDtoMapperTest {
-
     private final IBrandDtoMapper mapper = new IBrandDtoMapper() {
         @Override
         public BrandModel toModel(BrandRequest request) {
-            return null; // No lo usamos en este test
+            return null;
         }
 
         @Override
@@ -40,4 +39,5 @@ class IBrandDtoMapperTest {
                 })
                 .verifyComplete();
     }
+
 }

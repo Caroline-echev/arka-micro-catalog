@@ -6,6 +6,7 @@ import com.arka.micro_catalog.adapters.driving.reactive.dto.response.PaginationR
 import com.arka.micro_catalog.domain.model.CategoryModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ICategoryDtoMapper {
+    @Mapping(target = "id", ignore = true)
     CategoryModel toModel(CategoryRequest request);
 
     CategoryResponse toResponse(CategoryModel model);

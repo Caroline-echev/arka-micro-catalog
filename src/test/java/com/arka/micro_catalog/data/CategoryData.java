@@ -30,4 +30,7 @@ public class CategoryData {
     public static PaginationResponse<CategoryResponse> createPaginationResponse() {
         return new PaginationResponse<>(List.of(CategoryData.createCategoryResponse()), 1, 1, 1);
     }
+    public static List<CategoryModel> createCategoryList() {
+        return List.of(CategoryData.createCategory());
+    }
 }

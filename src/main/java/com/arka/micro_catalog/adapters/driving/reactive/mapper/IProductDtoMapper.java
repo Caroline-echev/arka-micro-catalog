@@ -7,6 +7,7 @@ import com.arka.micro_catalog.adapters.driving.reactive.dto.response.ProductResp
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import com.arka.micro_catalog.domain.model.ProductModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -16,6 +17,10 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface IProductDtoMapper {
 
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "brand", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     ProductModel toModel(ProductRequest request);
 
     ProductResponse toResponse(ProductModel model);

@@ -6,6 +6,7 @@ import com.arka.micro_catalog.adapters.driving.reactive.dto.response.PaginationR
 import com.arka.micro_catalog.domain.model.BrandModel;
 import com.arka.micro_catalog.domain.model.PaginationModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface IBrandDtoMapper {
+    @Mapping(target = "id", ignore = true)
     BrandModel toModel(BrandRequest request);
     BrandResponse toResponse(BrandModel model);
 

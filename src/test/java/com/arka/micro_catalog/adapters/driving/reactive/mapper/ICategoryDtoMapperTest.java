@@ -11,7 +11,6 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 class ICategoryDtoMapperTest {
-
     private final ICategoryDtoMapper mapper = new ICategoryDtoMapper() {
         @Override
         public CategoryModel toModel(CategoryRequest request) {
@@ -39,4 +38,5 @@ class ICategoryDtoMapperTest {
                 })
                 .verifyComplete();
     }
+
 }
