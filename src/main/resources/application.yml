@@ -1,0 +1,31 @@
+
+adapters:
+  r2dbc:
+    host: localhost
+    port: 5432
+    database: arka
+    schema: micro_catalog
+    username: postgres
+    password: postgres
+
+spring:
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/arka
+    user: postgres
+    password: postgres
+    schemas: micro_catalog
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  r2dbc:
+    url: r2dbc:postgresql://${adapters.r2dbc.host}:${adapters.r2dbc.port}/${adapters.r2dbc.database}?schema=${adapters.r2dbc.schema}
+    username: ${adapters.r2dbc.username}
+    password: ${adapters.r2dbc.password}
+
+logging:
+  level:
+    org.flywaydb: DEBUG
+
+server:
+  port: 8090
