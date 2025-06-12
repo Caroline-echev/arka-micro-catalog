@@ -1,20 +1,23 @@
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-time: 3600
 
 adapters:
   r2dbc:
-    host: localhost
+    host: ${DB_HOST}
     port: 5432
     database: arka
     schema: micro_catalog
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
 spring:
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/arka
-    user: postgres
-    password: postgres
-    schemas: micro_catalog
+    url: jdbc:postgresql://${adapters.r2dbc.host}:${adapters.r2dbc.port}/${adapters.r2dbc.database}
+    user: ${adapters.r2dbc.username}
+    password: ${adapters.r2dbc.password}
+    schemas: ${adapters.r2dbc.schema}
     baseline-on-migrate: true
     locations: classpath:db/migration
 
