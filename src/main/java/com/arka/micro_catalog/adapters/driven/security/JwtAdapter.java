@@ -43,17 +43,19 @@ public class JwtAdapter implements IJwtPersistencePort {
     public Mono<Boolean> validateToken(String token) {
         return Mono.fromCallable(() -> {
             try {
+                log.info("Validating token: {}", token);
                 Jwts.parserBuilder()
                         .setSigningKey(secretKey)
                         .build()
                         .parseClaimsJws(token);
                 return true;
             } catch (JwtException | IllegalArgumentException e) {
-                log.error("Invalid JWT token: {}", e.getMessage());
+                log.error("Invalid JWT token: {}", e.getMessage(), e);
                 return false;
             }
         });
     }
+
 
     @Override
     public Mono<String> getUserIdFromToken(String token) {

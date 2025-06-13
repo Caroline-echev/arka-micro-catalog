@@ -14,7 +14,9 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static com.arka.micro_catalog.configuration.util.ConstantsConfiguration.BEARER;
 import static com.arka.micro_catalog.configuration.util.ConstantsConfiguration.ROLE_PREFIX;
@@ -26,30 +28,46 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     private final IJwtPersistencePort jwtPersistencePort;
 
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/swagger-ui.html",
+            "/swagger-ui/",
+            "/swagger-ui/**",
+            "/v3/api-docs/",
+            "/v3/api-docs/**",
+            "/api-docs/**",
+            "/webjars/**",
+            "/favicon.ico",
+            "/api/categories/",
+            "/api/categories/**",
+            "/api/brands/",
+            "/api/brands/**",
+            "/api/products/",
+            "/api/products/**"
+    );
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getPath().value();
+        String path = exchange.getRequest().getURI().getPath();
 
-        // IGNORAR completamente las rutas de Swagger
-        if (isSwaggerPath(path)) {
+        if (isExcludedPath(path)) {
             return chain.filter(exchange);
         }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        // Si no hay token JWT, continuar (Spring Security decidirá si es necesario)
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
             return chain.filter(exchange);
         }
 
-        String token = authHeader.substring(7); // "Bearer ".length() = 7
+        String token = authHeader.substring(7);
 
         return jwtPersistencePort.validateToken(token)
                 .flatMap(isValid -> {
                     if (isValid) {
                         return createSecurityContext(token)
-                                .flatMap(authentication -> chain.filter(exchange)
-                                        .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication))
+                                .flatMap(authentication ->
+                                        chain.filter(exchange)
+                                                .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication))
                                 );
                     } else {
                         return unauthorized(exchange);
@@ -61,16 +79,14 @@ public class JwtAuthenticationFilter implements WebFilter {
                 });
     }
 
-    private boolean isSwaggerPath(String path) {
-        return path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/webjars") ||
-                path.startsWith("/api-docs") ||
-                path.startsWith("/swagger-resources");
+    private boolean isExcludedPath(String path) {
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        exchange.getResponse().getHeaders().remove(HttpHeaders.WWW_AUTHENTICATE);
+        exchange.getResponse().getHeaders().add(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
         return exchange.getResponse().setComplete();
     }
 
@@ -80,6 +96,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 jwtPersistencePort.getEmailFromToken(token),
                 jwtPersistencePort.getRoleFromToken(token)
         ).map(tuple -> {
+            String userId = tuple.getT1();
             String email = tuple.getT2();
             String role = tuple.getT3();
 

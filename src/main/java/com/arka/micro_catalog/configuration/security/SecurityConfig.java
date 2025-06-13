@@ -1,6 +1,5 @@
 package com.arka.micro_catalog.configuration.security;
 
-import com.arka.micro_catalog.configuration.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,24 +17,23 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        // Swagger y documentación - COMPLETAMENTE PÚBLICAS
                         .pathMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api-docs/**",
                                 "/webjars/**",
-                                "/swagger-resources/**",
-                                "/swagger-ui/index.html"
+                                "/favicon.ico"
                         ).permitAll()
 
-                        // Rutas públicas GET
                         .pathMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
-                        // Rutas protegidas POST/PUT/DELETE
                         .pathMatchers(HttpMethod.POST, "/api/categories/**").hasAnyRole("ADMIN", "LOGISTIC")
                         .pathMatchers(HttpMethod.PUT, "/api/categories/**").hasAnyRole("ADMIN", "LOGISTIC")
                         .pathMatchers(HttpMethod.DELETE, "/api/categories/**").hasAnyRole("ADMIN", "LOGISTIC")
@@ -48,18 +46,9 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("ADMIN", "LOGISTIC")
                         .pathMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN", "LOGISTIC")
 
-                        // Solo las rutas API requieren autenticación
-                        .pathMatchers("/api/**").authenticated()
-
-                        // Todo lo demás es público
-                        .anyExchange().permitAll()
+                        .anyExchange().authenticated()
                 )
-                .csrf(csrf -> csrf.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(formLogin -> formLogin.disable())
-                .logout(logout -> logout.disable())
-                // NO agregamos el filtro JWT para las rutas públicas
-                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }

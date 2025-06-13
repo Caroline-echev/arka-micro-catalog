@@ -10,27 +10,20 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("Arka Catalog Management API")
                         .version("v1.0")
-                        .description("API para gestión de catalogo de productos")
-                )
-                .addSecurityItem(new SecurityRequirement()
-                        .addList("Bearer Authentication")
-                )
+                        .description("API para gestión de catálogo de productos"))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication",
+                        .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()
-                                        .name("Bearer Authentication")
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .description("Ingrese el token JWT (sin 'Bearer ' al inicio)")
-                        )
-                );
+                                        .bearerFormat("JWT")));
     }
+
 }

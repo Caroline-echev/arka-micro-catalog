@@ -29,6 +29,7 @@ spring:
 logging:
   level:
     org.flywaydb: DEBUG
+    org.springframework.security: DEBUG
 
 server:
   port: 8090
