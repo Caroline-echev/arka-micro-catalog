@@ -9,9 +9,9 @@ import java.util.List;
 public interface IProductServicePort {
 
     Mono<Void> createProduct(ProductModel productModel, Long brandId, List<Long> categoryIds);
-
     Mono<PaginationModel<ProductModel>> getProducts( int page,  int size,   String sortDir,    String searc);
     Mono<ProductModel> getProductById(Long id);
     Mono<ProductModel> updateProduct(Long productId, ProductModel productModel, Long brandId, List<Long> categoryIds);
+    Mono<Boolean> existsById(Long id);
 
 }

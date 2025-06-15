@@ -24,13 +24,16 @@
 
         private final IProductServicePort productServicePort;
         private final IProductDtoMapper productDtoMapper;
+
         @PostMapping
         @ResponseStatus(HttpStatus.CREATED)
         @Operation(summary = "Create a new product")
         public Mono<Void> createProduct(@Valid @RequestBody ProductRequest request) {
             return productServicePort.createProduct(productDtoMapper.toModel(request), request.getBrandId() , request.getCategoryIds());
         }
+
         @GetMapping
+        @ResponseStatus(HttpStatus.OK)
         @Operation(summary = "Get paginated and filtered products")
         public Mono<PaginationResponse<ProductResponse>> getProducts(
                 @RequestParam(defaultValue = PAGE_DEFAULT) int page,
@@ -44,12 +47,14 @@
 
 
         @GetMapping("/{id}")
+        @ResponseStatus(HttpStatus.OK)
         @Operation(summary = "Get product by ID")
         public Mono<ProductResponse> getProductById(@PathVariable Long id) {
             return productServicePort.getProductById(id)
                     .map(productDtoMapper::toResponse);
         }
         @PutMapping("/{id}")
+        @ResponseStatus(HttpStatus.OK)
         @Operation(summary = "Update an existing product")
         public Mono<ProductResponse> updateProduct(
                 @PathVariable Long id,
@@ -58,4 +63,9 @@
                     .map(productDtoMapper::toResponse);
         }
 
+        @GetMapping("/exists/{id}")
+        @ResponseStatus(HttpStatus.OK)
+        @Operation(summary = "Check if a product exists by ID")
+        public Mono<Boolean> existsById( @PathVariable Long id) {
+            return productServicePort.existsById(id); }
     }
